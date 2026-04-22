@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-vonsole.log("ENV:",process.env.MONGO_URI);
+console.log("ENV:",process.env.MONGO_URI);
 
 mongoose.connect(process.env.MONGO_URI)
   .THEN(() => console.log("DB connected"))

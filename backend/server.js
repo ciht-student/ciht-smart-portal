@@ -5,11 +5,10 @@ const mongoose = require("mongoose");
 console.log("ENV:",process.env.MONGO_URI);
 
 mongoose.connect(process.env.MONGO_URI)
-  .THEN(() => console.log("DB connected"))
+  .then(() => console.log("DB connected"))
   .catch(err => console.log("DB error", err));
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/database');
 

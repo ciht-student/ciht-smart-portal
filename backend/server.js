@@ -1,23 +1,20 @@
 const dotenv = require("dotenv");
-dotenv.config();
+dotenv.config(); // 👈 sirf ek baar
+
+const express = require("express");
 const mongoose = require("mongoose");
-
-console.log("ENV:",process.env.MONGO_URI);
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("DB connected"))
-  .catch(err => console.log("DB error", err));
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const connectDB = require('./config/database');
-
-dotenv.config();
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// ✅ Debug (check env)
+console.log("ENV:", process.env.MONGO_URI);
+
+// ✅ MongoDB connect (sirf yahi jagah)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("DB connected"))
+  .catch(err => console.log("DB error", err));
 
 // Middleware
 app.use(cors());

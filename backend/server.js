@@ -1,3 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+import mongoose from "mongoose";
+
+vonsole.log("ENV:",process.env.MONGO_URI);
+
+mongoose.connect(process.env.MONGO_URI)
+  .THEN(() => console.log("DB connected"))
+  .catch(err => console.log("DB error", err));
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');

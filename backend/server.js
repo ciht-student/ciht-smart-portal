@@ -12,45 +12,39 @@ const path = require("path");
 const app = express();
 
 // ================================
-// 2. DEBUG ENV (REMOVE LATER IF YOU WANT)
+// 2. DEBUG ENV
 // ================================
 console.log("ENV:", process.env.MONGO_URI);
 
 // ================================
-// 3. DATABASE CONNECTION
+// 3. IMPORT MODELS
+// ================================
+const User = require("./models/User");
+
+// ================================
+// 4. DATABASE CONNECTION
 // ================================
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log("DB connected");
 
-    // ================================
-    // 3.1 TEMP ADMIN CREATION (REMOVE AFTER FIRST SUCCESSFUL RUN)
-    // ================================
-    createAdmin(); // 👈 RUN ONLY ONCE (IMPORTANT)
+    // 👇 ensure admin is created properly
+    await createAdmin();
   })
   .catch(err => console.log("DB error", err));
 
 
 // ================================
-// 4. IMPORT MODELS (FOR ADMIN CREATE)
-// ================================
-const User = require("./models/User");
-const bcrypt = require("bcryptjs");
-
-// ================================
-// 4.1 TEMP FUNCTION: CREATE DEFAULT ADMIN
-// 👉 REMOVE THIS AFTER FIRST DEPLOY SUCCESS
+// 5. CREATE DEFAULT ADMIN (FIXED)
 // ================================
 async function createAdmin() {
   try {
     const existing = await User.findOne({ username: "admin" });
 
     if (!existing) {
-      const hashedPassword = await bcrypt.hash("admin123", 10);
-
       await User.create({
         username: "admin",
-        password: hashedPassword,
+        password: "admin123", // ✅ plain (NO HASH HERE)
         role: "admin"
       });
 
@@ -65,21 +59,18 @@ async function createAdmin() {
 
 
 // ================================
-// 5. MIDDLEWARE
+// 6. MIDDLEWARE
 // ================================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// serve frontend
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 
 // ================================
-// 6. ROUTES
+// 7. ROUTES
 // ================================
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
@@ -89,7 +80,7 @@ app.use('/api/upload', require('./routes/upload'));
 
 
 // ================================
-// 7. HOME ROUTE (FRONTEND ENTRY)
+// 8. HOME ROUTE
 // ================================
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
@@ -97,7 +88,7 @@ app.get("/", (req, res) => {
 
 
 // ================================
-// 8. ERROR HANDLING
+// 9. ERROR HANDLING
 // ================================
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -108,7 +99,7 @@ app.use((err, req, res, next) => {
 
 
 // ================================
-// 9. SERVER START
+// 10. SERVER START
 // ================================
 const PORT = process.env.PORT || 5000;
 

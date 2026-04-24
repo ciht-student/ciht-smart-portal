@@ -41,7 +41,6 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
     document.getElementById('loginPage').style.display = 'flex';
 });
 
-// Show Dashboard
 function showDashboard() {
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
@@ -51,20 +50,27 @@ function showDashboard() {
     document.getElementById('teacherMenu').style.display = currentUser.role === 'teacher' ? 'block' : 'none';
     document.getElementById('studentMenu').style.display = currentUser.role === 'student' ? 'block' : 'none';
     
-    document.getElementById('userName').innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.name || currentUser.username}`;
+    document.getElementById('userName').innerHTML = 
+        `<i class="fas fa-user-circle"></i> ${currentUser.name || currentUser.username}`;
+    
+    // 🔥 FIX: attach events AFTER menu visible
+    attachSidebarEvents();
     
     loadPage('dashboard');
 }
 
 // Navigation
-document.querySelectorAll('.sidebar-nav a[data-page]').forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const page = link.getAttribute('data-page');
-        loadPage(page);
+// ✅ ADD THIS
+function attachSidebarEvents() {
+    document.querySelectorAll('.sidebar-nav a[data-page]').forEach(link => {
+        link.onclick = (e) => {
+            e.preventDefault();
+            const page = link.getAttribute('data-page');
+            console.log("Clicked:", page);
+            loadPage(page);
+        };
     });
-});
-
+}
 // Load Page Content
 async function loadPage(page) {
     currentPage = page;

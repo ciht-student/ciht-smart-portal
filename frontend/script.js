@@ -195,50 +195,72 @@ async function loadDashboard() {
 
 // Load Students
 async function loadStudents() {
-    const endpoint = currentUser.role === 'admin' ? '/admin/students' : '/teacher/students';
-    const response = await fetch(`${API_URL}${endpoint}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    const students = await response.json();
-    
-    const contentArea = document.getElementById('contentArea');
-    contentArea.innerHTML = `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <h2>Student Management</h2>
-            <button class="btn-primary" onclick="showAddStudentModal()">Add Student</button>
-        </div>
-        <div class="data-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Roll Number</th>
-                        <th>Name</th>
-                        <th>Branch</th>
-                        <th>Semester</th>
-                        <th>Phone</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${students.map(student => `
-                        <tr>
-                            <td>${student.rollNumber}</td>
-                            <td>${student.name}</td>
-                            <td>${student.branch}</td>
-                            <td>${student.semester}</td>
-                            <td>${student.phone}</td>
-                            <td>
-                                <button class="btn-primary" onclick="editStudent('${student._id}')">Edit</button>
-                                <button class="btn-danger" onclick="deleteStudent('${student._id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-}
+    try {
+        const endpoint = currentUser.role === 'admin' ? '/admin/students' : '/teacher/students';
 
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+
+        const students = await response.json();
+
+        console.log("API RESPONSE 👉", students); // 👈 DEBUG
+
+        // ❌ IMPORTANT FIX
+        if (!Array.isArray(students)) {
+            alert(students.message || "Failed to load students");
+
+            // 👇 agar token issue ho to logout kara do
+            if (students.message && students.message.includes("Not authorized")) {
+                localStorage.removeItem('token');
+                location.reload();
+            }
+
+            return;
+        }
+
+        const contentArea = document.getElementById('contentArea');
+
+        contentArea.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2>Student Management</h2>
+                <button class="btn-primary" onclick="showAddStudentModal()">Add Student</button>
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Branch</th>
+                            <th>Semester</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${students.map(student => `
+                            <tr>
+                                <td>${student.rollNumber}</td>
+                                <td>${student.name}</td>
+                                <td>${student.branch}</td>
+                                <td>${student.semester}</td>
+                                <td>${student.phone}</td>
+                                <td>
+                                    <button class="btn-primary" onclick="editStudent('${student._id}')">Edit</button>
+                                    <button class="btn-danger" onclick="deleteStudent('${student._id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } catch (error) {
+        console.log("ERROR 👉", error);
+        alert("Something went wrong");
+    }
+}
 // Show Add Student Modal
 function showAddStudentModal() {
     const modal = document.createElement('div');

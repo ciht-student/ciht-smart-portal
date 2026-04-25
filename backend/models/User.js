@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     ref: 'Student',
     sparse: true
   },
+  branch: {
+  type: String,
+  default: null
+},
   createdAt: {
     type: Date,
     default: Date.now

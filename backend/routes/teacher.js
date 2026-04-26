@@ -6,6 +6,8 @@ const Attendance = require('../models/Attendance');
 const Marks = require('../models/Marks');
 const Notice = require('../models/Notice');
 const TimeTable = require('../models/TimeTable');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 router.use(protect, teacher);
 
@@ -50,18 +52,36 @@ router.post('/students', async (req, res) => {
       return res.status(400).json({ message: "Roll number already exists" });
     }
 
+    // 🔥 STEP 1: USER CREATE
+    const hashedPassword = await bcrypt.hash(rollNumber + "@123", 10);
+
+    const user = await User.create({
+      username: rollNumber,
+      password: hashedPassword,
+      role: 'student'
+    });
+
+    // 🔥 STEP 2: STUDENT CREATE WITH LINK
     const student = new Student({
       name,
       rollNumber,
       phone,
       address,
       semester,
-      branch: req.user.branch
+      branch: req.user.branch,
+      userId: user._id   // ✅ LINK FIX
     });
 
     await student.save();
 
-    res.status(201).json(student);
+    res.status(201).json({
+      message: "Student created successfully",
+      student,
+      login: {
+        username: rollNumber,
+        password: rollNumber + "@123"
+      }
+    });
 
   } catch (error) {
     console.log("ADD STUDENT ERROR:", error.message);

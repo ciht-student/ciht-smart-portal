@@ -378,6 +378,9 @@ async function loadAttendance() {
                                 <td>${student.rollNumber}</td>
                                 <td>${student.name}</td>
                                 <td>
+                                <input type="text" id="subject_${student._id}" placeholder="Subject" class="form-control">
+                                </td>
+                                <td>
                                     <input type="date" id="date_${student._id}" class="form-control">
                                 </td>
                                 <td>
@@ -447,10 +450,13 @@ async function loadAttendance() {
 // Mark Attendance
 async function markAttendance(studentId) {
     const status = document.getElementById(`status_${studentId}`).value;
+    const subject = document.getElementById(`subject_${studentId}`).value;
     const dateInput = document.getElementById(`date_${studentId}`).value;
 
-    if (!dateInput) {
-        alert("Please select date");
+    const date = dateInput || new Date().toISOString().split('T')[0];
+
+    if (!subject) {
+        alert("Please enter subject");
         return;
     }
 
@@ -460,13 +466,16 @@ async function markAttendance(studentId) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ studentId, date: dateInput, status })
+        body: JSON.stringify({ studentId, date, status, subject })
     });
+
+    const data = await response.json();
 
     if (response.ok) {
         alert('Attendance marked successfully');
     } else {
-        alert('Error marking attendance');
+        console.error(data);
+        alert(data.message || 'Error marking attendance');
     }
 }
 // Load Marks

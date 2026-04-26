@@ -378,6 +378,9 @@ async function loadAttendance() {
                                 <td>${student.rollNumber}</td>
                                 <td>${student.name}</td>
                                 <td>
+                                    <input type="date" id="date_${student._id}" class="form-control">
+                                </td>
+                                <td>
                                     <select id="status_${student._id}">
                                         <option value="present">Present</option>
                                         <option value="absent">Absent</option>
@@ -444,24 +447,28 @@ async function loadAttendance() {
 // Mark Attendance
 async function markAttendance(studentId) {
     const status = document.getElementById(`status_${studentId}`).value;
-    const date = new Date().toISOString().split('T')[0];
-    
+    const dateInput = document.getElementById(`date_${studentId}`).value;
+
+    if (!dateInput) {
+        alert("Please select date");
+        return;
+    }
+
     const response = await fetch(`${API_URL}/teacher/attendance`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ studentId, date, status })
+        body: JSON.stringify({ studentId, date: dateInput, status })
     });
-    
+
     if (response.ok) {
         alert('Attendance marked successfully');
     } else {
         alert('Error marking attendance');
     }
 }
-
 // Load Marks
 async function loadMarks() {
     if (currentUser.role === 'teacher') {

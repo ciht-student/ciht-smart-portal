@@ -107,10 +107,15 @@ router.post('/attendance', async (req, res) => {
     if (!studentId || !date || !status || !subject) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    const student = await Student.findById(studentId);
+     if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
     const attendance = new Attendance({
       studentId,
       branch: req.user.branch,
+      semester: student.semester,
       date,
       status,
       subject

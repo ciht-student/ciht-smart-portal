@@ -22,7 +22,12 @@ router.get('/profile', async (req, res) => {
 // Get Attendance
 router.get('/attendance', async (req, res) => {
   try {
-    const attendance = await Attendance.find({ studentId: req.user.studentId });
+    const student = await Student.findOne({ userId: req.user.id });
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    const records = await Attendance.find({ studentId: student._id });
     const totalLectures = attendance.length;
     const present = attendance.filter(a => a.status === 'present').length;
     const percentage = totalLectures > 0 ? (present / totalLectures) * 100 : 0;

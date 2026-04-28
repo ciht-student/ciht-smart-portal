@@ -22,7 +22,7 @@ router.get('/profile', async (req, res) => {
 // Get Attendance
 router.get('/attendance', async (req, res) => {
   try {
-    const student = await Student.findOne({ userId: req.user.id });
+    const studentId = await Student.findOne({ userId: req.user.id });
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });

@@ -22,27 +22,32 @@ router.get('/profile', async (req, res) => {
 // Get Attendance
 router.get('/attendance', async (req, res) => {
   try {
-    const studentId = await Student.findOne({ userId: req.user.id });
+    // 👇 correct student fetch
+    const student = await Student.findOne({ userId: req.user._id });
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    const records = await Attendance.find({ studentId: student._id });
+
+    // 👇 correct attendance fetch
+    const attendance = await Attendance.find({ studentId: student._id });
+
+    // 👇 calculations
     const totalLectures = attendance.length;
     const present = attendance.filter(a => a.status === 'present').length;
     const percentage = totalLectures > 0 ? (present / totalLectures) * 100 : 0;
-    
+
     res.json({
       attendance,
       totalLectures,
       present,
       percentage: percentage.toFixed(2)
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
 // Get Marks
 router.get('/marks', async (req, res) => {
   try {

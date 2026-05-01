@@ -41,6 +41,15 @@ body {
     margin-top: 10px;
 }
 
+.custom-logo {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  background-image: url('/assets/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .form-group {
     margin-bottom: 20px;
 }

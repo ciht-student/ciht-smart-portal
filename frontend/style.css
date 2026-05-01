@@ -43,8 +43,9 @@ body {
 
 .custom-logo {
   display: inline-block;
-  width: 160px;
-  height: 60px;
+  width: 180px;
+  height: 70px;
+  margin-left: 10px;
   background-image: url('logo.png');
   background-size: contain;
   background-repeat: no-repeat;

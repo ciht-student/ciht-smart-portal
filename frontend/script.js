@@ -333,6 +333,99 @@ function showAddStudentModal() {
     });
 }
 
+// Edit Student
+async function editStudent(id) {
+    const endpoint = currentUser.role === 'admin'
+        ? '/admin/students'
+        : '/teacher/students';
+
+    const response = await fetch(`${API_URL}${endpoint}`, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+
+    const students = await response.json();
+    const student = students.find(s => s._id === id);
+
+    if (!student) {
+        alert('Student not found');
+        return;
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3>Edit Student</h3>
+
+            <form id="editStudentForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value="${student.name}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="text" name="rollNumber" value="${student.rollNumber}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Branch</label>
+                    <input type="text" name="branch" value="${student.branch}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="number" name="semester" value="${student.semester}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="${student.phone}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" required class="form-control">${student.address || ''}</textarea>
+                </div>
+
+                <button type="submit" class="btn-success">Update</button>
+                <button type="button" class="btn-danger" onclick="this.closest('.modal').remove()">Cancel</button>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+
+    document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        const updateResponse = await fetch(`${API_URL}${endpoint}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (updateResponse.ok) {
+            modal.remove();
+            loadStudents();
+            alert('Student updated successfully');
+        } else {
+            const error = await updateResponse.json();
+            alert(error.message || 'Update failed');
+        }
+    });
+}
+
 // Delete Student
 async function deleteStudent(id) {
     if (confirm('Are you sure you want to delete this student?')) {
@@ -349,11 +442,6 @@ async function deleteStudent(id) {
             alert('Error deleting student');
         }
     }
-}
-
-// Edit Student
-function editStudent(id) {
-    alert("Edit Student ID: " + id);
 }
 
 // Load Attendance

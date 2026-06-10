@@ -60,17 +60,27 @@ function showDashboard() {
 }
 
 // Navigation
-// ✅ ADD THIS
 function attachSidebarEvents() {
     document.querySelectorAll('.sidebar-nav a[data-page]').forEach(link => {
         link.onclick = (e) => {
             e.preventDefault();
+
+            // Remove active from all links
+            document.querySelectorAll('.sidebar-nav a[data-page]').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Add active to clicked link
+            link.classList.add('active');
+
             const page = link.getAttribute('data-page');
             console.log("Clicked:", page);
+
             loadPage(page);
         };
     });
 }
+
 // Load Page Content
 async function loadPage(page) {
     currentPage = page;

@@ -351,6 +351,11 @@ async function deleteStudent(id) {
     }
 }
 
+// Edit Student
+function editStudent(id) {
+    alert("Edit Student ID: " + id);
+}
+
 // Load Attendance
 async function loadAttendance() {
     if (currentUser.role === 'teacher') {
